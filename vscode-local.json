@@ -1,0 +1,13 @@
+{
+  "00-core.md": {"applyTo": "**"},
+  "10-architecture.md": {"description": "Use when designing or reviewing system boundaries, interfaces, technology choices or architecture decisions."},
+  "20-python-framework.md": {"applyTo": "**/*.py,**/*.pyi,**/pyproject.toml,**/uv.lock"},
+  "21-react-typescript.md": {"applyTo": "**/*.ts,**/*.tsx,**/*.jsx,**/tsconfig*.json"},
+  "23-rust-tauriv2.md": {"applyTo": "**/*.rs,**/Cargo.toml,**/Cargo.lock,**/tauri.conf.json,**/src-tauri/**"},
+  "30-security.md": {"description": "Use for changes involving authentication, authorization, sensitive input, secrets, network boundaries or security review."},
+  "40-testing.md": {"applyTo": "**/tests/**,**/__tests__/**,**/test_*.py,**/*.test.*,**/*.spec.*", "description": "Use when planning tests, reviewing coverage or verifying a behavior change."},
+  "50-iac.md": {"applyTo": "**/*.tf,**/*.tfvars,**/Dockerfile,**/Dockerfile.*,**/compose.y*ml,**/docker-compose*.y*ml,**/.gitlab-ci.yml,**/.github/workflows/**,**/.devcontainer/**", "description": "Use when changing infrastructure, Kubernetes, OpenShift, GitOps, CI/CD or deployment configuration."},
+  "60-compliance.md": {"description": "Use for privacy, licensing, governance, data retention, data transfers or compliance requirements."},
+  "70-git.md": {"description": "Use for commits, PRs, merge requests, ADRs, changelogs, versioning and release or deployment preparation."},
+  "80-agent-skills.md": {"applyTo": "**"}
+}
