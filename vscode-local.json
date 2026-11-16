@@ -1,7 +1,6 @@
 {
   "00-core.md": {"applyTo": "**"},
   "10-architecture.md": {"description": "Use when designing or reviewing system boundaries, interfaces, technology choices or architecture decisions."},
-  "20-python-framework.md": {"applyTo": "**/*.py,**/*.pyi,**/pyproject.toml,**/uv.lock"},
   "21-react-typescript.md": {"applyTo": "**/*.ts,**/*.tsx,**/*.jsx,**/tsconfig*.json"},
   "23-rust-tauriv2.md": {"applyTo": "**/*.rs,**/Cargo.toml,**/Cargo.lock,**/tauri.conf.json,**/src-tauri/**"},
   "30-security.md": {"description": "Use for changes involving authentication, authorization, sensitive input, secrets, network boundaries or security review."},

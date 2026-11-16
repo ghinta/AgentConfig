@@ -27,8 +27,11 @@ class ProfileTest(unittest.TestCase):
         for repo in ("Rules", "Skills"):
             (self.root / repo).mkdir()
             self.git(repo, "init", "-q")
-        for rule in ("00-core", "80-agent-skills", "20-python-framework"):
+        for rule in ("00-core", "80-agent-skills"):
             (self.root / "Rules" / f"{rule}.md").write_text(rule)
+        (self.root / "Rules/20-python-framework.md").write_text(
+            '---\napplyTo: "**/*.py"\n---\n\n# Python\n'
+        )
         self.skill("sample")
         self.pin()
 
@@ -123,6 +126,26 @@ class ProfileTest(unittest.TestCase):
         routes.write_text(json.dumps(mapping))
         self.cli_run("apply")
         self.assertIn("**/*.go", (self.home / RULE_DIR / "24-go.instructions.md").read_text())
+
+    def test_source_scope_wins_and_is_copied_verbatim(self):
+        name = "20-python-framework.md"
+        mapping = self.cli / "vscode-local.json"
+        routes = read_json(mapping)
+        routes[name] = {"applyTo": "**"}
+        mapping.write_text(json.dumps(routes))
+        rule = self.root / "Rules" / name
+        rule.write_text('---\napplyTo: "**/*.pyi"\n---\n\n# Python\n')
+        self.pin()
+        self.cli_run("apply")
+        target = self.home / RULE_DIR / "20-python-framework.instructions.md"
+        source = subprocess.check_output(["git", "-C", str(rule.parent), "show", "HEAD:" + name])
+        self.assertEqual(source, target.read_bytes())
+
+    def test_unclosed_source_frontmatter_prevents_installation(self):
+        (self.root / "Rules/20-python-framework.md").write_text('---\napplyTo: "**/*.py"\n')
+        self.pin()
+        self.assertIn("unclosed YAML frontmatter", self.cli_run("apply", success=False))
+        self.assertFalse((self.home / ".copilot").exists())
 
     def test_interrupted_apply_is_recoverable(self):
         self.cli_run("apply")

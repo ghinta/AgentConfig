@@ -27,7 +27,7 @@ Mit `--sources VERZEICHNIS` wählst du das gemeinsame Elternverzeichnis der beid
 | Nummerierte Markdown-Dateien aus Rules | `.copilot/instructions/ghinta/*.instructions.md` | Basis und Aufrufpolitik mit `applyTo: "**"`, Fachregeln nach Dateimuster oder Aufgabenbeschreibung |
 | `Skills/.agents/skills/<name>/` einschließlich lokaler Referenzen und Vorlagen | `.copilot/skills/<name>/` | Explizit über `/<name>`; die Installationskopie erhält `disable-model-invocation: true` |
 
-Die Profileinstellung in [vscode-local.json](vscode-local.json) ordnet jeder Regel einen Auslöser zu. Ein Python-Dateikontext aktiviert beispielsweise die Python-Regel. In Local-Sitzungen kann eine Aufgabenbeschreibung unabhängig vom Dateimuster zur Auswahl führen. Welche Dateien einen konkreten Chat erreicht haben, zeigt die Instruction-Diagnose.
+Die Python-Regel legt ihre Dateimuster mit `applyTo` direkt in `Rules/20-python-framework.md` fest. AgentConfig übernimmt sie mitsamt Frontmatter. Für Regeln ohne Frontmatter liefert [vscode-local.json](vscode-local.json) den Auslöser. In Local-Sitzungen kann eine Aufgabenbeschreibung unabhängig vom Dateimuster zur Auswahl führen. Welche Dateien einen konkreten Chat erreicht haben, zeigt die Instruction-Diagnose.
 
 Für aktuelle Standardkonfigurationen erkennt VS Code beide Zielordner. Falls dein Profil andere Suchorte definiert, diese Einträge in den **User Settings** ergänzen und vorhandene Einträge beibehalten:
 
@@ -53,7 +53,7 @@ Zielprofil ist das Session Target **Local**. Im Modellmenü bleibt dein bereits 
 |---|---|
 | Neuer, geänderter oder entfernter Skill | Beim nächsten freigegebenen Update wird der gesamte Skill-Ordner abgeglichen. Der fachliche Katalog in Rules bleibt bei den Autoren. |
 | Geänderte oder entfernte Fachregel | AgentConfig ersetzt oder entfernt die zugehörige generierte Datei. |
-| Neue Fachregel | Eine Route in `vscode-local.json` ergänzen. Ohne Route meldet die Vorschau den Dateinamen, bevor die Installation beginnt. |
+| Neue Fachregel | Mit `applyTo` oder `description` im Frontmatter der Quelldatei wird die Regel direkt übernommen. Für Regeln ohne Frontmatter eine Route in `vscode-local.json` ergänzen. |
 | Eigene Änderungen oder gleichnamige bestehende Skills | AgentConfig meldet den Konflikt. Die Dateien prüfen und bei Bedarf außerhalb des verwalteten Ordners sichern. |
 
 In `~/.agentconfig/` stehen die aktuell und zuvor installierten Versionen mitsamt Quell-IDs und Dateiinhalt. `rollback` stellt den vorherigen Stand offline wieder her. Nach der Erstinstallation entfernt er die installierten Profil-Dateien. Ein abgebrochener Schreibvorgang lässt sich mit `recover` abschließen. Gleichzeitig laufende Schreibvorgänge werden gesperrt.

@@ -66,20 +66,35 @@ def skill_doc(data, name):
     return ("\n".join(lines) + "\n").encode()
 
 
+def rule_doc(name, data, fallback):
+    lines = data.decode("utf-8-sig").splitlines()
+    if lines and lines[0] == "---":
+        try:
+            end = lines.index("---", 1)
+        except ValueError:
+            raise ValueError(f"{name}: unclosed YAML frontmatter") from None
+        if not any(re.match(r"^(applyTo|description):[ \t]+\S", line) for line in lines[1:end]):
+            raise ValueError(f"{name}: expected applyTo or description in the source frontmatter")
+        return data
+
+    if (not isinstance(fallback, dict) or not fallback
+            or not fallback.keys() <= {"applyTo", "description"}
+            or not all(isinstance(v, str) and v.strip() for v in fallback.values())):
+        raise ValueError(f"{name}: add source frontmatter or configure its routing in vscode-local.json")
+    header = "".join(f"{k}: {json.dumps(v, ensure_ascii=False)}\n" for k, v in fallback.items())
+    return f"---\n{header}---\n\n".encode() + data
+
+
 def build(sources, pins, routing):
     result = {}
     rules = sources / "Rules"
     for name, mode, oid in files(rules, pins["Rules"]):
         if not RULE_NAME.fullmatch(name):
             continue
-        route = routing.get(name)
-        if (mode != "100644" or not isinstance(route, dict) or not route
-                or not route.keys() <= {"applyTo", "description"}
-                or not all(isinstance(v, str) and v.strip() for v in route.values())):
-            raise ValueError(f"{name}: configure its VS Code routing in vscode-local.json")
-        header = "".join(f"{k}: {json.dumps(v, ensure_ascii=False)}\n" for k, v in route.items())
+        if mode != "100644":
+            raise ValueError(f"Unsupported rule entry: {name}")
         target = f"{RULE_DIR}/{name[:-3]}.instructions.md"
-        result[target] = f"---\n{header}---\n\n".encode() + git(rules, "cat-file", "blob", oid)
+        result[target] = rule_doc(name, git(rules, "cat-file", "blob", oid), routing.get(name))
     skills = sources / "Skills"
     names = set()
     for path, mode, oid in files(skills, pins["Skills"], ".agents/skills/"):
